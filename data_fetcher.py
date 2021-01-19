@@ -7,9 +7,9 @@ params = {'sort': 'product_id'}
 headers = {'Content-Type': 'application/json',
            'Accept': 'application/json'}
 has_next = True
-is_first = True
-next_url = None
-page_num = 1
+is_first = False
+next_url = 'https://api.hackathon.tchibo.com/api/v1/products?page=2328&sort=product_id'
+page_num = 2328
 start_time = time.time()
 
 while has_next:
@@ -19,7 +19,7 @@ while has_next:
   else:
     resp = requests.get(next_url, headers=headers)
   data = json.loads(resp.text)
-  with open('products_{}.json'.format(page_num), 'w+') as f:
+  with open('data/products_{}.json'.format(page_num), 'w+') as f:
     f.write(json.dumps(data['data']))
   has_next = data['links']['next'] is not None
   next_url = data['links']['next']
@@ -28,4 +28,4 @@ while has_next:
   if page_num % 20 == 0:
     end_time = time.time()
     print(str(page_num) + ' donwloaded in ' + str(end_time - start_time))
-  time.sleep(1)
+  time.sleep(0.5)
