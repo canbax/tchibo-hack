@@ -1,0 +1,1 @@
+#  we can use description, category, price and images to make a similarity matrix and recommomend the highest scoring ones
