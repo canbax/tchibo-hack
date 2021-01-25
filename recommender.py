@@ -3,7 +3,10 @@ import time
 import pickle
 import numpy as np
 import spacy
+import webbrowser
 
+SENTENCE_SIM_LIMIT = 100
+CNT_RECOMMEND = 10
 # we can use description, category, price and images to make a similarity matrix and recommomend the highest scoring ones
 
 x = None
@@ -46,20 +49,40 @@ def german_sentence_sim(s1: str, s2: str):
   return d1.similarity(d2)
 
 
-product_idx = 0
-p1 = x[product_idx]['category']['google_shopping_api']
-p2 = float(x[product_idx]['price']['amount'])
+def recommend4(product_idx: int, x):
+  """ product_idx is the index of the product to make suggestions
+   x should be a list of all the products. (like products_1.json) """
+  p1 = x[product_idx]['category']['google_shopping_api']
+  p2 = float(x[product_idx]['price']['amount'])
 
-start_time = time.time()
+  start_time = time.time()
 
-category_sims = []
-for idx, xi in enumerate(x):
-  if idx == product_idx:
-    continue
-  category_sims.append(substr_sim(p1, xi['category']['google_shopping_api']))
-  # print(num_sim(p2, float(xi['price']['amount'])))
-  # print(str(p2) + '  vs ' + xi['price']['amount'])
+  sim4TheProduct = []
+  for idx, xi in enumerate(x):
+    if idx == product_idx:
+      continue
+    sim = substr_sim(p1, xi['category']['google_shopping_api'])
+    sim2 = num_sim(p2, float(xi['price']['amount']))
+    sim4TheProduct.append({'sim1': sim, 'sim2': sim2, 'product_idx': idx})
 
-category_sims = sorted(category_sims, reverse=True)
-print(category_sims[:100])
-print(' executed in ' + str(time.time() - start_time))
+  # get only the top 100 similar ones because calculating similarity to each other takes 6-7 minutes for a product
+  sim4TheProduct = sorted(sim4TheProduct, key=lambda x: x['sim1'], reverse=True)[
+      :SENTENCE_SIM_LIMIT]
+
+  for sim in sim4TheProduct:
+    desc1 = x[product_idx]['description']['long']
+    desc2 = x[sim['product_idx']]['description']['long']
+    sim['sim3'] = german_sentence_sim(desc1, desc2)
+    sim['recommend_score'] = sim['sim1'] * 0.13 + \
+        sim['sim2'] * 0.33 + + sim['sim3'] * 0.54
+  
+  sim4TheProduct = sorted(sim4TheProduct, key=lambda x: x['recommend_score'], reverse=True)
+
+  webbrowser.open(x[product_idx]['image']['default'], new=2)
+  for sim in sim4TheProduct[:10]:
+    webbrowser.open(x[sim['product_idx']]['image']['default'], new=2)
+
+  print(sim4TheProduct[:10])
+  print(' executed in ' + str(time.time() - start_time))
+
+recommend4(0, x)
