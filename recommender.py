@@ -7,6 +7,8 @@ import webbrowser
 
 SENTENCE_SIM_LIMIT = 100
 CNT_RECOMMEND = 10
+WEIGHTS_4_RECOMMEND_SCORE = [0.33, 0.33, 0.34]
+WEIGHTS_4_PRESELECTION = [1, 0]
 # we can use description, category, price and images to make a similarity matrix and recommomend the highest scoring ones
 
 x = None
@@ -67,6 +69,13 @@ def get_prop_values(xi, props):
   return l
 
 
+def preselection(x):
+  r = 0
+  for i in range(len(WEIGHTS_4_PRESELECTION)):
+    r += x['sim' + str(i)] * WEIGHTS_4_PRESELECTION[i]
+  return r
+
+
 def calculate_basic_sim(product_idx: int, x):
   prop_list = [
       {'is_float': False, 'path': ['category', 'google_shopping_api']},
@@ -91,9 +100,16 @@ def calculate_basic_sim(product_idx: int, x):
     similarity2MainProduct.append(similarities)
 
   # get only the top 100 similar ones because calculating similarity to each other takes 6-7 minutes for a product
-  similarity2MainProduct = sorted(similarity2MainProduct, key=lambda x: x['sim0'], reverse=True)[
+  similarity2MainProduct = sorted(similarity2MainProduct, key=preselection, reverse=True)[
       :SENTENCE_SIM_LIMIT]
   return similarity2MainProduct
+
+
+def get_recommand_score(obj):
+  score = 0
+  for i in range(len(WEIGHTS_4_RECOMMEND_SCORE)):
+    score += obj['sim' + str(i)] * WEIGHTS_4_RECOMMEND_SCORE[i]
+  return score
 
 
 def recommend4(product_idx: int, x):
@@ -106,8 +122,7 @@ def recommend4(product_idx: int, x):
     desc1 = get_value(x[product_idx], prop1)
     desc2 = get_value(x[sim['product_idx']], prop1)
     sim['sim2'] = german_sentence_sim(desc1, desc2)
-    sim['recommend_score'] = sim['sim0'] * 0.33 + \
-        sim['sim1'] * 0.33 + + sim['sim2'] * 0.34
+    sim['recommend_score'] = get_recommand_score(sim)
 
   sim4TheProduct = sorted(
       sim4TheProduct, key=lambda x: x['recommend_score'], reverse=True)
