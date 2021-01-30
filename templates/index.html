@@ -1,0 +1,29 @@
+<script>
+  function getSimilar2() {
+    const v = document.getElementById('product-idx').value;
+    console.log('get similar to ', v);
+    const xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log(this.responseText);
+      }
+    };
+    xhttp.open('GET', 'similars?product_idx=' + v, true);
+    xhttp.send();
+  }
+</script>
+
+<h2>Enter a product index [0-37878]</h2>
+
+<div>
+  <input id="product-idx" type="number" name="product_idx">
+  <button onclick="getSimilar2()" type="submit"> Get Similar Products </button>
+</div>
+
+<div id="curr-product">
+  <img id="curr-product-img" src="">
+</div>
+
+<div id="similars">
+
+</div>

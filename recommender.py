@@ -112,7 +112,7 @@ def get_recommand_score(obj):
   return score
 
 
-def recommend4(product_idx: int, x):
+def recommend4(product_idx: int):
   """ product_idx is the index of the product to make suggestions
    x should be a list of all the products. (like products_1.json) """
   start_time = time.time()
@@ -127,13 +127,9 @@ def recommend4(product_idx: int, x):
   sim4TheProduct = sorted(
       sim4TheProduct, key=lambda x: x['recommend_score'], reverse=True)
 
-  prop2 = ['image', 'default']
-  webbrowser.open(get_value(x[product_idx], prop2), new=2)
-  for sim in sim4TheProduct[:10]:
-    webbrowser.open(get_value(x[sim['product_idx']], prop2), new=2)
+  # prop2 = ['image', 'default']
+  # webbrowser.open(get_value(x[product_idx], prop2), new=2)
+  # for sim in sim4TheProduct[:10]:
+  #   webbrowser.open(get_value(x[sim['product_idx']], prop2), new=2)
 
-  print(sim4TheProduct[:10])
-  print(' executed in ' + str(time.time() - start_time))
-
-
-recommend4(0, x)
+  return json.dumps(sim4TheProduct[:10])
