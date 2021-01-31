@@ -23,14 +23,24 @@
 
 <body>
   <div class="cont">
-
-    <h2>Enter a product index [0-37878]</h2>
+    <div class="pull-right" id="txt-notify"></div>
+    <table>
+      <tr>
+        <td>
+          <input class="form-control" id="product-idx" type="number" placeholder="Product index">
+        </td>
+        <td>
+          <button type="button" class="btn btn-outline-primary" onclick="getProductInfo()"> Get Product Info </button>
+        </td>
+        <td>
+          <button type="button" class="btn btn-outline-primary" onclick="getSimilar2()"> Get Similar Products </button>
+        </td>
+      </tr>
+    </table>
     <div>
-      <input id="product-idx" type="number" name="product_idx">
-      <button onclick="getProductInfo()" type="submit"> Get Product Info </button>
-      <button onclick="getSimilar2()" type="submit"> Get Similar Products </button>
+      <textarea id="settings" class="form-control" rows="6" cols="50"></textarea>
+      <button type="button" class="btn btn-outline-primary" onclick="updateSettings()"> Update Settings </button>
     </div>
-
     <div id="curr-product">
 
     </div>

@@ -5,7 +5,7 @@ import numpy as np
 import spacy
 import webbrowser
 
-SENTENCE_SIM_LIMIT = 100
+PRESELECTION_SIZE = 100
 CNT_RECOMMEND = 10
 WEIGHTS_4_RECOMMEND_SCORE = [0.33, 0.33, 0.34]
 WEIGHTS_4_PRESELECTION = [1, 0]
@@ -19,6 +19,22 @@ nlp = spacy.load('de_core_news_lg')
 
 # with open('all_products.json', 'r') as f:
 #   x = json.loads(f.read())
+
+
+def update_settings(preselection_size=100, cnt_recommend=10, weights4recommend_score=[0.33, 0.33, 0.34], weights4preselect=[1, 0]):
+  global PRESELECTION_SIZE, CNT_RECOMMEND, WEIGHTS_4_RECOMMEND_SCORE, WEIGHTS_4_PRESELECTION
+  PRESELECTION_SIZE = preselection_size
+  CNT_RECOMMEND = cnt_recommend
+  WEIGHTS_4_RECOMMEND_SCORE = weights4recommend_score
+  WEIGHTS_4_PRESELECTION = weights4preselect
+
+
+def get_settings():
+  return {'preselection_size': PRESELECTION_SIZE,
+          'cnt_recommend': CNT_RECOMMEND,
+          'weights_4_recommend_score': WEIGHTS_4_RECOMMEND_SCORE,
+          'weights_4_preselection': WEIGHTS_4_PRESELECTION
+          }
 
 
 def substr_sim(s1: str, s2: str):
@@ -101,7 +117,7 @@ def calculate_basic_sim(product_idx: int, x):
 
   # get only the top 100 similar ones because calculating similarity to each other takes 6-7 minutes for a product
   similarity2MainProduct = sorted(similarity2MainProduct, key=preselection, reverse=True)[
-      :SENTENCE_SIM_LIMIT]
+      :PRESELECTION_SIZE]
   return similarity2MainProduct
 
 
@@ -132,4 +148,4 @@ def recommend4(product_idx: int):
   # for sim in sim4TheProduct[:10]:
   #   webbrowser.open(get_value(x[sim['product_idx']], prop2), new=2)
 
-  return sim4TheProduct[:10]
+  return sim4TheProduct[:CNT_RECOMMEND]

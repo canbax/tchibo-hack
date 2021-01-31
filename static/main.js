@@ -34,7 +34,7 @@ function generateCard4Product(x, container, similarityData) {
   const cardDiv = document.createElement('div');
   cardDiv.style.width = '18rem;'
   cardDiv.className = 'card';
-  
+
   const img = document.createElement('img');
   img.className = 'card-img-top';
   img.src = x.image.default;
@@ -48,8 +48,8 @@ function generateCard4Product(x, container, similarityData) {
 
   const cardText = document.createElement('p');
   cardText.className = 'card-text';
-  if ( x.description.long.length > 30) {
-    cardText.innerText = x.description.long.substr(0, 27) + '...';  
+  if (x.description.long.length > 100) {
+    cardText.innerText = x.description.long.substr(0, 97) + '...';
   } else {
     cardText.innerText = x.description.long;
   }
@@ -62,7 +62,7 @@ function generateCard4Product(x, container, similarityData) {
 
   const listItem = document.createElement('li');
   listItem.className = 'list-group-item';
-  listItem.innerText = 'Google Shopping API:' + x.category.google_shopping_api;
+  listItem.innerText = 'Category: ' + x.category.google_shopping_api;
 
   const listItem2 = document.createElement('li');
   listItem2.className = 'list-group-item';
@@ -90,4 +90,34 @@ function generateCard4Product(x, container, similarityData) {
   cardDiv.appendChild(list);
 
   container.appendChild(cardDiv);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById('settings').value = this.responseText;
+    }
+  };
+  xhttp.open('GET', 'getconfig', true);
+  xhttp.send();
+});
+
+function notify(txt) {
+  document.getElementById('txt-notify').innerText = txt;
+  setTimeout(() => {
+    document.getElementById('txt-notify').innerText = '';
+  }, 1500);
+}
+
+function updateSettings() {
+  const url = '/setconfig';
+  fetch(url, {
+    method: 'POST',
+    body: document.getElementById('settings').value,
+  }).then(
+    response => { console.log(response.text()); } // .json(), etc.
+  ).then(
+    html => console.log(html)
+  );
 }
