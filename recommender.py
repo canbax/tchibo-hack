@@ -132,4 +132,4 @@ def recommend4(product_idx: int):
   # for sim in sim4TheProduct[:10]:
   #   webbrowser.open(get_value(x[sim['product_idx']], prop2), new=2)
 
-  return json.dumps(sim4TheProduct[:10])
+  return sim4TheProduct[:10]
